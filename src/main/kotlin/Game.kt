@@ -8,7 +8,7 @@ fun Canvas.drawGame(game: Game){
     drawPlayer(game.player)
 
     if(game.state == "inventory"){
-        drawInventory(game)
+        drawGUI(createPlayerInventoryGUI(game))
     }
 }
 

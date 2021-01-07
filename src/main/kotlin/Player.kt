@@ -1,5 +1,4 @@
 import pt.isel.canvas.*
-import java.lang.Exception
 
 class Player (name: String, position: Position, health: Int, inventory: Inventory)
     : Character(name, position, health, inventory){
@@ -26,10 +25,51 @@ const val INVENTORY_WINDOW_COLOR = 0xabb5c4
 const val INVENTORY_LABEL_BACKGROUND_COLOR = 0xc9bb99
 
 
+fun createPlayerInventoryGUI(game: Game) : GUI{
+    val windowPosition = Position((TRUE_WIDTH * 0.1).toInt(), TILE_SIDE)
+    val windowWidth = (TRUE_WIDTH * 0.8).toInt()
+    val windowHeight = (TRUE_WIDTH * 0.9).toInt()
+
+    var InventoryGUI = emptyList<Button>()
+    val mainWindow = Button(windowPosition, windowWidth, windowHeight, INVENTORY_WINDOW_COLOR, text = null, false)
+
+    val titleRect = Button(windowPosition, windowWidth, TILE_SIDE, WHITE,
+                           Text(Position(windowPosition.x + windowWidth/5, windowPosition.y + TILE_SIDE),
+                                "${game.player.name}'s Inventory"), false)
+
+    val labelRect = Button(Position(windowPosition.x, windowPosition.y * 2), windowWidth, TILE_SIDE, INVENTORY_LABEL_BACKGROUND_COLOR,
+                           Text(Position(windowPosition.x, windowPosition.y * 2 + TILE_SIDE), "Name"), false)
+
+    InventoryGUI = InventoryGUI + mainWindow + titleRect + labelRect
+
+    repeat(game.player.inventory.items.size){
+        InventoryGUI = InventoryGUI +
+                Button(Position(windowPosition.x, windowPosition.y + TILE_SIDE * (3 + it)),
+                    windowWidth, TILE_SIDE, INVENTORY_WINDOW_COLOR,
+                    Text(Position(windowPosition.x, windowPosition.y + TILE_SIDE * (3 + it)),
+                                  "${game.player.inventory.items[it].name} "), true)
+    }
+
+    return GUI(InventoryGUI)
+
+    /*drawRect(windowPosition.x, windowPosition.y, windowWidth, windowHeight, INVENTORY_WINDOW_COLOR)
+    drawRect(windowPosition.x, windowPosition.y, windowWidth, TILE_SIDE, WHITE)
+
+    drawText(windowPosition.x + windowWidth/5, windowPosition.y + TILE_SIDE - 3, "${game.player.name}'s Inventory", BLACK, 20)
+    drawRect(windowPosition.x, windowPosition.y * 2, windowWidth, TILE_SIDE, INVENTORY_LABEL_BACKGROUND_COLOR)
+
+    drawText(windowPosition.x, windowPosition.y + TILE_SIDE * 2, "Name", BLACK, 20)
+    repeat(game.player.inventory.items.size){
+        drawText(windowPosition.x, windowPosition.y + TILE_SIDE * (3 + it), "${game.player.inventory.items[it].name} ", BLACK, 20)
+    }*/
+}
+
 fun Canvas.drawInventory(game: Game){
     val windowPosition = Position((width * 0.1).toInt(), TILE_SIDE)
     val windowWidth = (width * 0.8).toInt()
     val windowHeight = (width * 0.9).toInt()
+
+
 
     drawRect(windowPosition.x, windowPosition.y, windowWidth, windowHeight, INVENTORY_WINDOW_COLOR)
     drawRect(windowPosition.x, windowPosition.y, windowWidth, TILE_SIDE, WHITE)
