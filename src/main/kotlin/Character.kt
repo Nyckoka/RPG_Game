@@ -2,14 +2,19 @@
 
 data class Position(val x: Int, val y: Int)
 
-open class Character(val name: String, val position: Position, val health: Int){
-    init {
-        println("Created character named $name in the (${position.x},${position.y}) position and with $health health.")
-    }
+open class Character(val name: String, val position: Position, val health: Int, val inventory: Inventory){
+
 }
 
-class Player (name: String, position: Position, health: Int) : Character(name, position, health){
-    init {
-        println("Created player named $name in the (${position.x},${position.y}) position and with $health health.")
-    }
+class Player (name: String, position: Position, health: Int, inventory: Inventory)
+    : Character(name, position, health, inventory){
+
 }
+
+fun Character.addItem(item: Item) : Character{
+    return Character(name, position, health, inventory.addItem(item))
+}
+
+fun Player.addItem(item: Item) : Player = Player(name, position, health, inventory.addItem(item))
+
+fun Character.showItems() = inventory.showItems()
