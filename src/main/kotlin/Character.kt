@@ -20,4 +20,4 @@ class Enemy (name: String, position: Position, health: Int, inventory: Inventory
 
 }
 
-fun Enemy.addItem(item: Item) : Player = Player(name, position, health, inventory.addItem(item))
+fun Enemy.addItem(item: Item) : Enemy = Enemy(name, position, health, inventory.addItem(item))
