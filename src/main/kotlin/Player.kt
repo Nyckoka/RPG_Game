@@ -7,16 +7,14 @@ fun Canvas.drawPlayer(player: Player){
 }
 
 
-fun Player.move(dir : Char) : Player{
-    return copy(position = Position(position.x + if(dir == 'd') 1 else if(dir == 'a') -1 else 0,
-                 position.y + if(dir == 's') 1 else if(dir == 'w') -1 else 0))
-}
+fun Player.move(dir : Char) =
+    copy(position = Position(position.x + if(dir == 'd') 1 else if(dir == 'a') -1 else 0,
+                             position.y + if(dir == 's') 1 else if(dir == 'w') -1 else 0))
 
 fun Player.addItem(item: Item) = copy(inventory = inventory.addItem(item)).updateInventoryGUI()
 fun Player.removeItem(itemName: String) = copy(inventory = inventory.removeItem(itemName)).updateInventoryGUI()
 fun Player.removeItem(id: Int) = copy(inventory = inventory.removeItem(id)).updateInventoryGUI()
 
-fun Player.selectButtoninInventory(button: Button, select: Boolean) : Player{
-    return copy(inventory = Inventory(inventory.items,
-        GUI(inventory.gui.buttons - button + button.changeColor(if(select) CYAN else INVENTORY_WINDOW_COLOR))))
-}
+fun Player.selectInventoryButton(button: Button) = copy(inventory = inventory.selectButton(button))
+
+fun Player.checkInventoryClicks(me: MouseEvent, multiSelect: Boolean) = copy(inventory = inventory.checkClicks(me, multiSelect))

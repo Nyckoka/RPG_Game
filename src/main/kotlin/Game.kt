@@ -23,8 +23,9 @@ fun Game.giveItemtoPlayer(item: Item) = Game(player.addItem(item), state)
 fun Game.removeItemfromPlayer(name: String) = Game(player.removeItem(name), state)
 fun Game.removeItemfromPlayer(id: Int) = Game(player.removeItem(id), state)
 
+fun Game.checkInventoryClicks(me: MouseEvent, multiSelect: Boolean) = copy(player = player.checkInventoryClicks(me, multiSelect))
 
-fun Game.removeSelectedItemfromInventory() : Game{
+fun Game.removeInventorySelectedItems() : Game{
     var game = this
     if(state == "inventory"){
         player.inventory.gui.buttons.forEach { button ->
@@ -44,19 +45,4 @@ fun Game.toggleInventory() : Game{
 }
 
 
-fun Game.checkClicksinInventory(me: MouseEvent, multiSelect: Boolean) : Game{
-    var game = this
-    if(state == "inventory"){  //If the inventory is open
-        val clickedButtons = player.inventory.gui.buttons.filter { it.isClicked(me) }
-        clickedButtons.forEach { button ->
-            //Select or unselect the current button
-            game = game.copy(player = game.player.selectButtoninInventory(button, button.color != CYAN))
-        }
-        //If not multiselecting, verify if other buttons are selected and unselect them (change color)
-        if(!multiSelect) (player.inventory.gui.buttons - clickedButtons).forEach { not_clickedButton ->
-            if(not_clickedButton.color == CYAN)
-                game = game.copy(player = game.player.selectButtoninInventory(not_clickedButton, false))
-        }
-    }
-    return game
-}
+

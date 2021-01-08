@@ -29,12 +29,12 @@ fun main(){
                 game = game.toggleInventory()
             }
             else if(ke.char == 'f'){
-                game = game.removeSelectedItemfromInventory()
+                game = game.removeInventorySelectedItems()
             }
         }
 
         arena.onMouseDown { me ->
-            game = game.checkClicksinInventory(me, false)
+            game = game.checkInventoryClicks(me, false)
         }
 
     }

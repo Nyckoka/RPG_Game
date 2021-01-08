@@ -26,9 +26,12 @@ fun Inventory.showItems(){
 }
 
 
+fun Inventory.selectButton(button: Button) = copy(gui = gui.selectButton(button))
+
+fun Inventory.checkClicks(me: MouseEvent, multiSelect: Boolean) = copy(gui = gui.checkClicks(me, multiSelect))
+
 const val INVENTORY_WINDOW_COLOR = 0xabb5c4
 const val INVENTORY_LABEL_BACKGROUND_COLOR = 0xc9bb99
-
 
 fun Player.updateInventoryGUI() : Player{
     val windowPosition = Position((TRUE_WIDTH * 0.1).toInt(), TILE_SIDE)
