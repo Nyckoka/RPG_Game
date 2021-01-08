@@ -9,7 +9,6 @@ const val TRUE_HEIGHT = HEIGHT * TILE_SIDE
 
 fun main(){
     var game = Game(Player("Knight", Position(0, 0), 100, Inventory(emptyList(), GUI(emptyList()))).updateInventoryGUI(), "playing")
-
     val arena = Canvas(50 * TILE_SIDE, 20 * TILE_SIDE + 5, BLACK)
 
     game = game.giveItemtoPlayer(Item("Golden Crown", 100))
@@ -18,7 +17,6 @@ fun main(){
 
 
     onStart {
-
         arena.onTimeProgress(10){
             arena.drawGame(game)
         }
@@ -36,7 +34,7 @@ fun main(){
         }
 
         arena.onMouseDown { me ->
-            game = game.checkClicksinInventory(me)
+            game = game.checkClicksinInventory(me, false)
         }
 
     }

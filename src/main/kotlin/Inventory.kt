@@ -1,24 +1,20 @@
 import pt.isel.canvas.*
 
-class Item(val name: String, val value: Int){
+data class Item(val name: String, val value: Int)
 
-}
-
-class Inventory(val items: List<Item>, val gui: GUI) {
-
-}
+data class Inventory(val items: List<Item>, val gui: GUI)
 
 fun Inventory.addItem(item: Item) = Inventory(items + item, gui)
 
 fun Inventory.removeItem(name: String) : Inventory{
     for(item in items){
-        if(item.name == name) return Inventory(items - item, gui)
+        if(item.name == name) return copy(items = items - item)
     }
     println("There's no item with the name \"$name\" in the inventory!")
     return this
 }
 fun Inventory.removeItem(id: Int) : Inventory{
-    try{ return Inventory(items - items[id], gui) }
+    try{ return copy(items = items - items[id]) }
     catch (e: Exception){ println("There's no item with the id $id in the inventory!") }
     return this
 }
@@ -59,16 +55,5 @@ fun Player.updateInventoryGUI() : Player{
                         inventory.items[it].name, 20), true)
     }
 
-    return Player(name, position, health, Inventory(inventory.items, GUI(InventoryGUI)))
-
-    /*drawRect(windowPosition.x, windowPosition.y, windowWidth, windowHeight, INVENTORY_WINDOW_COLOR)
-    drawRect(windowPosition.x, windowPosition.y, windowWidth, TILE_SIDE, WHITE)
-
-    drawText(windowPosition.x + windowWidth/5, windowPosition.y + TILE_SIDE - 3, "${game.player.name}'s Inventory", BLACK, 20)
-    drawRect(windowPosition.x, windowPosition.y * 2, windowWidth, TILE_SIDE, INVENTORY_LABEL_BACKGROUND_COLOR)
-
-    drawText(windowPosition.x, windowPosition.y + TILE_SIDE * 2, "Name", BLACK, 20)
-    repeat(game.player.inventory.items.size){
-        drawText(windowPosition.x, windowPosition.y + TILE_SIDE * (3 + it), "${game.player.inventory.items[it].name} ", BLACK, 20)
-    }*/
+    return copy(inventory = Inventory(inventory.items, GUI(InventoryGUI)))
 }

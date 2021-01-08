@@ -16,7 +16,7 @@ fun Button.isClicked(me: MouseEvent) : Boolean{
     return clickable && me.x in position.x..position.x + width && me.y in position.y..position.y + height
 }
 
-fun Button.changeColor(color: Int) = Button(position, width, height, color, text, clickable)
+fun Button.changeColor(color: Int) = copy(color = color)
 
 
 data class GUI(val buttons: List<Button>)

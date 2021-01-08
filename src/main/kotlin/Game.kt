@@ -25,13 +25,16 @@ fun Game.removeItemfromPlayer(id: Int) = Game(player.removeItem(id), state)
 
 
 fun Game.removeSelectedItemfromInventory() : Game{
+    var game = this
     if(state == "inventory"){
         player.inventory.gui.buttons.forEach { button ->
-            if(button.color == CYAN && button.text != null)
-                return removeItemfromPlayer(button.text.string)
+            if(button.color == CYAN && button.text != null){
+                println("Item with name ${button.text.string} was removed")
+                game = game.removeItemfromPlayer(button.text.string)
+            }
         }
     }
-    return this
+    return game
 }
 
 
@@ -41,19 +44,18 @@ fun Game.toggleInventory() : Game{
 }
 
 
-fun Game.checkClicksinInventory(me: MouseEvent) : Game{
+fun Game.checkClicksinInventory(me: MouseEvent, multiSelect: Boolean) : Game{
     var game = this
     if(state == "inventory"){  //If the inventory is open
-        player.inventory.gui.buttons.forEach { button ->
-            if(button.isClicked(me)){  //If the current button was clicked
-                //Verify if other buttons are selected and unselect them (change color)
-                (player.inventory.gui.buttons - button).forEach{ otherButton ->
-                    if(otherButton.color == CYAN)
-                        game = Game(player.selectButtoninInventory(otherButton, false), state)
-                }
-                //Select or unselect the current button
-                game = Game(game.player.selectButtoninInventory(button, button.color != CYAN), game.state)
-            }
+        val clickedButtons = player.inventory.gui.buttons.filter { it.isClicked(me) }
+        clickedButtons.forEach { button ->
+            //Select or unselect the current button
+            game = game.copy(player = game.player.selectButtoninInventory(button, button.color != CYAN))
+        }
+        //If not multiselecting, verify if other buttons are selected and unselect them (change color)
+        if(!multiSelect) (player.inventory.gui.buttons - clickedButtons).forEach { not_clickedButton ->
+            if(not_clickedButton.color == CYAN)
+                game = game.copy(player = game.player.selectButtoninInventory(not_clickedButton, false))
         }
     }
     return game
