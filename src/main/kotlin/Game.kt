@@ -13,6 +13,7 @@ fun Canvas.drawGame(game: Game){
     }
 }
 
+fun Game.isInventoryOpen() = state == "inventory"
 
 fun Game.openInventory() = changeState("inventory")
 fun Game.changeState(state: String) = Game(player, state)
@@ -27,12 +28,10 @@ fun Game.checkInventoryClicks(me: MouseEvent, multiSelect: Boolean) = copy(playe
 
 fun Game.removeInventorySelectedItems() : Game{
     var game = this
-    if(state == "inventory"){
-        player.inventory.gui.buttons.forEach { button ->
-            if(button.color == CYAN && button.text != null){
-                println("Item with name ${button.text.string} was removed")
-                game = game.removeItemfromPlayer(button.text.string)
-            }
+    player.inventory.gui.buttons.forEach { button ->
+        if(button.color == CYAN && button.text != null){
+            println("Item with name ${button.text.string} was removed")
+            game = game.removeItemfromPlayer(button.text.string)
         }
     }
     return game

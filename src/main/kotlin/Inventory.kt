@@ -41,11 +41,11 @@ fun Player.updateInventoryGUI() : Player{
     var InventoryGUI = emptyList<Button>()
     val mainWindow = Button(windowPosition, windowWidth, windowHeight, INVENTORY_WINDOW_COLOR, text = null, false)
 
-    val titleRect = Button(windowPosition, windowWidth, TILE_SIDE, WHITE,
-        Text(Position(windowPosition.x + windowWidth/5, windowPosition.y + TILE_SIDE),
-            "${name}'s Inventory", 20), false)
+    val title = "${name}'s Inventory"
+    val titleRect = Button(windowPosition, windowWidth, TILE_SIDE + 5, WHITE,
+        Text(Position(windowPosition.x, windowPosition.y + TILE_SIDE), title, 20), false)
 
-    val labelRect = Button(Position(windowPosition.x, windowPosition.y + TILE_SIDE), windowWidth, TILE_SIDE * 2, INVENTORY_LABEL_BACKGROUND_COLOR,
+    val labelRect = Button(Position(windowPosition.x, windowPosition.y + TILE_SIDE + 5), windowWidth, TILE_SIDE * 2, INVENTORY_LABEL_BACKGROUND_COLOR,
         Text(Position(windowPosition.x, windowPosition.y + (TILE_SIDE * 2.5).toInt()), "Name", 25), false)
 
     InventoryGUI = InventoryGUI + mainWindow + titleRect + labelRect
