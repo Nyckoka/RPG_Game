@@ -1,48 +1,32 @@
 import pt.isel.canvas.*
 
-data class Text(val position: Position, val string: String, val fontSize: Int, val color: Int = BLACK)
-data class Button(val position: Position, val width: Int, val height: Int, val color: Int, val text: Text?, val clickable: Boolean)
 
-fun Button.xRange() = position.x..position.x + width
-fun Button.yRange() = position.y..position.y + height
+data class GUI(val rects: List<Rect>, val windowPosition: Position, val windowWidth: Int, val windowHeight: Int)
 
-fun Canvas.drawButtonRect(button: Button){
-    button.apply { drawRect(position.x, position.y, width, height, color) }
-}
+fun GUI.slots() = rects.filterIsInstance<Slot>()
 
-fun Canvas.drawButtonText(button: Button){
-    if(button.text != null) button.text.apply { drawText(position.x, position.y, string, color, fontSize) }
-}
-
-fun Button.isPointInside(x: Int, y: Int) = x in xRange() && y in yRange()
-
-fun Button.isClicked(me: MouseEvent) = clickable && isPointInside(me.x, me.y)
-
-fun Button.changeColor(color: Int) = copy(color = color)
-fun Button.select() = changeColor(if(color != CYAN) CYAN else INVENTORY_WINDOW_COLOR)
-
-data class GUI(val buttons: List<Button>)
-
-fun GUI.selectButton(button: Button) = GUI(buttons - button + button.select())
+fun GUI.selectSlot(slot: Slot) = copy(rects = rects - slot + slot.select())
 
 fun GUI.checkClicks(me: MouseEvent, multiSelect: Boolean): GUI{
     var gui = this
-    val clickedButtons = gui.buttons.filter { it.isClicked(me) }
-    val notClickedButtons = gui.buttons - clickedButtons
+    val clickedSlots = gui.slots().filter { it.isClicked(me) }
+    val notClickedSlots = gui.slots() - clickedSlots
 
-    clickedButtons.forEach { button ->
-        //Select or unselect the current button
-        gui = gui.selectButton(button)
+    clickedSlots.forEach { slot ->
+        //Select or unselect the current slot
+        gui = gui.selectSlot(slot)
     }
-    //If not multiselecting, verify if other buttons are selected and unselect them (change color)
-    if(!multiSelect) notClickedButtons.forEach { not_clickedButton ->
-        if(not_clickedButton.color == CYAN)
-            gui = gui.selectButton(not_clickedButton)
+    //If not multiselecting, verify if other slots are selected and unselect them (change color)
+    if(!multiSelect) notClickedSlots.forEach { not_clickedSlot ->
+        if(not_clickedSlot.color == CYAN)
+            gui = gui.selectSlot(not_clickedSlot)
     }
     return gui
 }
 
+fun GUI.addButton(button: Rect) = copy(rects = rects + button)
+
 fun Canvas.drawGUI(gui: GUI){
-    gui.buttons.forEach { drawButtonRect(it) }
-    gui.buttons.forEach { drawButtonText(it) }
+    gui.rects.forEach { drawRectShape(it) }
+    gui.rects.forEach { drawRectText(it) }
 }

@@ -2,13 +2,16 @@ import pt.isel.canvas.*
 
 
 const val TILE_SIDE = 20
-const val WIDTH = 20
-const val HEIGHT = 20
+const val WIDTH = 60
+const val HEIGHT = 40
 const val TRUE_WIDTH = WIDTH * TILE_SIDE
 const val TRUE_HEIGHT = HEIGHT * TILE_SIDE
 
 fun main(){
-    var game = Game(Player("Knight", Position(0, 0), 100, Inventory(emptyList(), GUI(emptyList()))).updateInventoryGUI(), "playing")
+    var game = Game(player = Player("Knight", Position(0, 0), 100,
+                    Inventory(emptyList(), loadPlayerInventoryGUI("Knight"))),
+                    state = "playing",
+                    map = loadMap(1))
     val arena = Canvas(WIDTH * TILE_SIDE, HEIGHT * TILE_SIDE + 5, GREEN)
 
     game = game.giveItemtoPlayer(Item("Golden Crown", 100))
@@ -21,14 +24,11 @@ fun main(){
         }
 
         arena.onKeyPressed { ke ->
-            if(ke.char in "wasd" && game.state == "playing"){
-                game = game.movePlayer(ke.char)
-            }
-            else if(ke.char == 'i'){
-                game = game.toggleInventory()
-            }
-            else if(ke.char == 'f'){
-                if(game.isInventoryOpen()) game = game.removeInventorySelectedItems()
+            when(ke.char){
+                in "wasd" -> if(game.state == "playing") game = game.movePlayer(ke.char)
+                'i' -> game = game.toggleInventory()
+                'f' -> if(game.isInventoryOpen()) game = game.removeInventorySelectedItems()
+                //'m' -> Show mini map
             }
         }
 
