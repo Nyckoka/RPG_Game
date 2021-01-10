@@ -7,11 +7,16 @@ const val HEIGHT = 40
 const val TRUE_WIDTH = WIDTH * TILE_SIDE
 const val TRUE_HEIGHT = HEIGHT * TILE_SIDE
 
+const val MAP_NUMBER = 1
+const val PLAYER_NAME = "Knight"
+
+fun emptyInventory() = Inventory(emptyList(), GUI(emptyList()))
+
 fun main(){
-    var game = Game(player = Player("Knight", Position(0, 0), 100,
-                    Inventory(emptyList(), loadPlayerInventoryGUI("Knight"))),
+    var game = Game(player = Player("Knight", Position(0, 0), 100, emptyInventory()),
+                    npcs = loadNPCs(MAP_NUMBER),
                     state = "playing",
-                    map = loadMap(1))
+                    map = loadMap(MAP_NUMBER))
     val arena = Canvas(WIDTH * TILE_SIDE, HEIGHT * TILE_SIDE + 5, GREEN)
 
     game = game.giveItemtoPlayer(Item("Golden Crown", 100))

@@ -33,38 +33,50 @@ fun Inventory.selectSlot(slot: Slot) = copy(gui = gui.selectSlot(slot))
 
 fun Inventory.checkClicks(me: MouseEvent, multiSelect: Boolean) = copy(gui = gui.checkClicks(me, multiSelect))
 
-fun Inventory.updateInventoryGUI() : Inventory{
-    val notSlots = gui.rects - gui.rects.filterIsInstance<Slot>().filter { it.clickable }
 
-    var slots = emptyList<Rect>()
+const val INVENTORY_WINDOW_COLOR = 0xfce89d  //BEIGE
+const val INVENTORY_WINDOW_BORDER_COLOR = 0xccbc7e
+const val INVENTORY_LABEL_BACKGROUND_COLOR = 0xc9bb99
+const val INVENTORY_BORDER_THICKNESS = 5
 
-    repeat(items.size){
-        slots = slots +
-                Slot(Position(gui.windowPosition.x, gui.windowPosition.y + TILE_SIDE * (3 + it)),
-                    gui.windowWidth, TILE_SIDE, INVENTORY_WINDOW_COLOR,
-                    Text(Position(gui.windowPosition.x, gui.windowPosition.y + TILE_SIDE * (4 + it)),
-                        items[it].name, 20), true)
+val windowPosition = Position((TRUE_WIDTH * 0.1).toInt(), TILE_SIDE)
+const val inventoryWindowWidth = (TRUE_WIDTH * 0.8).toInt()
+const val inventoryWindowHeight = (TRUE_WIDTH * 0.9).toInt()
+
+fun Canvas.drawInventory(inventory: Inventory){
+    //Main window
+    drawRect(windowPosition.x, windowPosition.y, inventoryWindowWidth, inventoryWindowHeight, INVENTORY_WINDOW_COLOR)
+
+    //Label rectangle
+    drawRect(windowPosition.x, windowPosition.y + TILE_SIDE, inventoryWindowWidth, TILE_SIDE * 2, INVENTORY_LABEL_BACKGROUND_COLOR)
+
+    //Title text
+    drawText(windowPosition.x + INVENTORY_BORDER_THICKNESS, windowPosition.y + TILE_SIDE, "$PLAYER_NAME's Inventory", BLACK, 20)
+
+    //Label text
+    drawText(windowPosition.x + INVENTORY_BORDER_THICKNESS, windowPosition.y + TILE_SIDE * 2, "Name", BLACK, 25)
+
+    for(slot in inventory.gui.slots){
+        drawRect(windowPosition.x, slot.yPos(), inventoryWindowWidth, TILE_SIDE,
+                color = if(slot.selected) CYAN else INVENTORY_WINDOW_COLOR)
+    }
+    for(slot in inventory.gui.slots){
+        drawText(windowPosition.x, slot.yPos() + TILE_SIDE, inventory.items[slot.position].name, BLACK, 20)
     }
 
-    return copy(gui = gui.copy(rects = notSlots + slots))
+    //Main window border
+    drawRect(windowPosition.x, windowPosition.y, inventoryWindowWidth, inventoryWindowHeight, INVENTORY_WINDOW_BORDER_COLOR, INVENTORY_BORDER_THICKNESS)
+
+    //Close button
+    drawRect(windowPosition.x + inventoryWindowWidth - TILE_SIDE, windowPosition.y,
+            TILE_SIDE, TILE_SIDE, RED)
 }
 
-const val INVENTORY_WINDOW_COLOR = 0xabb5c4
-const val INVENTORY_LABEL_BACKGROUND_COLOR = 0xc9bb99
+fun Inventory.updateInventoryGUI() : Inventory{
+    var slots = emptyList<Slot>()
+    repeat(items.size){
+        slots = slots + Slot(it, false)
+    }
 
-fun loadPlayerInventoryGUI(playerName: String): GUI{
-    val windowPosition = Position((TRUE_WIDTH * 0.1).toInt(), TILE_SIDE)
-    val windowWidth = (TRUE_WIDTH * 0.8).toInt()
-    val windowHeight = (TRUE_WIDTH * 0.9).toInt()
-
-    val mainWindow = Rect(windowPosition, windowWidth, windowHeight, INVENTORY_WINDOW_COLOR, text = null)
-
-    val title = "${playerName}'s Inventory"
-    val titleRect = Rect(windowPosition, windowWidth, TILE_SIDE + 5, WHITE,
-        Text(Position(windowPosition.x, windowPosition.y + TILE_SIDE), title, 20))
-
-    val labelRect = Rect(Position(windowPosition.x, windowPosition.y + TILE_SIDE + 5), windowWidth, TILE_SIDE * 2, INVENTORY_LABEL_BACKGROUND_COLOR,
-        Text(Position(windowPosition.x, windowPosition.y + (TILE_SIDE * 2.5).toInt()), "Name", 25))
-
-    return GUI(rects = listOf(mainWindow, titleRect, labelRect), windowPosition, windowWidth, windowHeight)
+    return copy(gui = gui.copy(slots = slots))
 }

@@ -2,7 +2,7 @@ import pt.isel.canvas.*
 import java.io.File
 
 
-data class Game(val player: Player, val state: String, val map: List<List<Int>>)
+data class Game(val player: Player, val npcs: List<NPC>, val state: String, val map: List<List<Int>>)
 
 fun Game.isInventoryOpen() = state == "inventory"
 
@@ -23,10 +23,10 @@ fun Game.checkInventoryClicks(me: MouseEvent, multiSelect: Boolean) = copy(playe
 
 fun Game.removeInventorySelectedItems() : Game{
     var game = this
-    player.inventory.gui.rects.forEach { button ->
-        if(button.color == CYAN && button.text != null){
-            println("Item with name ${button.text.string} was removed")
-            game = game.removeItemfromPlayer(button.text.string)
+    player.inventory.gui.slots.forEach { slot ->
+        if(slot.selected){
+            println("Item with name ${player.inventory.items[slot.position].name} was removed")
+            game = game.removeItemfromPlayer(slot.position)
         }
     }
     return game
@@ -36,7 +36,7 @@ fun Game.toggleInventory() : Game = if(state != "inventory") openInventory() els
 
 
 fun loadMap(number: Int) : List<List<Int>>{
-    val file = File("src/main/resources/Map$number.txt")
+    val file = File("src/main/resources/Map$number/Tiles.txt")
     val lines = file.readLines()
 
     var map = listOf<List<Int>>()
@@ -56,6 +56,23 @@ fun loadMap(number: Int) : List<List<Int>>{
     return map
 }
 
+fun loadNPCs(number: Int) : List<NPC>{
+    val file = File("src/main/resources/Map$number/NPCs.txt")
+    val lines = file.readLines()
+
+    var npcs = listOf<NPC>()
+
+    for(i in lines.indices){
+        for(j in lines[i].indices){
+            when(lines[i][j]){
+                'B' -> npcs = npcs + NPC("Banker", Position(j, i), 100, emptyInventory())
+                'V' -> npcs = npcs + NPC("Vendor", Position(j, i), 100, emptyInventory())
+            }
+        }
+    }
+    return npcs
+}
+
 fun Canvas.drawMap(map: List<List<Int>>){
     for(i in map.indices){
         for(j in map[i].indices){
@@ -64,13 +81,19 @@ fun Canvas.drawMap(map: List<List<Int>>){
     }
 }
 
+fun Canvas.drawNPCs(npcs : List<NPC>){
+    npcs.forEach { drawNPC(it)}
+}
+
 fun Canvas.drawGame(game: Game){
     erase()
     drawMap(game.map)
+    drawNPCs(game.npcs)
     drawPlayer(game.player)
 
     if(game.state == "inventory"){
-        drawGUI(game.player.inventory.gui)
+        drawInventory(game.player.inventory)
+        //drawGUI(game.player.inventory.gui)
     }
 }
 

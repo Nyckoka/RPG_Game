@@ -14,23 +14,16 @@ fun Rect.yRange() = position.y..position.y + height
 fun Rect.isPointInside(x: Int, y: Int) = x in xRange() && y in yRange()
 
 
-fun Canvas.drawRectShape(button: Rect){
-    button.apply { drawRect(position.x, position.y, width, height, color) }
-}
+data class Slot(val position: Int, val selected: Boolean)
 
-fun Canvas.drawRectText(button: Rect){
-    if(button.text != null) button.text.apply { drawText(position.x, position.y, string, color, fontSize) }
-}
+fun Slot.yPos() = windowPosition.y + TILE_SIDE * (3 + position)
 
-class Slot(position: Position, width: Int, height: Int, color: Int, text: Text?, val clickable: Boolean)
-    : Rect(position, width, height, color, text)
+fun Slot.xRange() = windowPosition.x..windowPosition.x + inventoryWindowWidth
+fun Slot.yRange() = yPos()..yPos() + TILE_SIDE
 
-fun Slot.isClicked(me: MouseEvent) = clickable && isPointInside(me.x, me.y)
+fun Slot.isPointInside(x: Int, y: Int) = x in xRange() && y in yRange()
 
-fun Slot.copy(position: Position = this.position, width: Int = this.width, height: Int = this.height, color: Int = this.color,
-         text: Text? = this.text, clickable: Boolean = this.clickable)
-        = Slot(position, width, height, color, text, clickable)
+fun Slot.isClicked(me: MouseEvent) = isPointInside(me.x, me.y)
 
-fun Slot.changeColor(color: Int) = copy(color = color)
-
-fun Slot.select() = changeColor(if(color != CYAN) CYAN else INVENTORY_WINDOW_COLOR)
+fun Slot.select() = copy(selected = true)
+fun Slot.unselect() = copy(selected = false)
