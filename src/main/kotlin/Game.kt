@@ -2,39 +2,49 @@ import pt.isel.canvas.*
 import java.io.File
 
 
-data class Game(val player: Player, val npcs: List<NPC>, val state: String, val map: List<List<Int>>)
+data class Game(val player: Player, val npcs: List<NPC>, val state: String, val map: List<List<Int>>, val gui: GUI)
 
 fun Game.isInventoryOpen() = state == "inventory"
 
 fun Game.openInventory() = changeState("inventory")
-fun Game.closeInventory() = changeState("playing")
+
+fun Game.closeInventory() : Game = copy(state = "playing", gui = gui.unselectAllSlots())
 
 fun Game.changeState(state: String) = copy(state = state)
 
 fun Game.movePlayer(dir: Char) = copy(player = player.move(dir))
 
-fun Game.giveItemtoPlayer(item: Item) = copy(player = player.addItem(item))
+//Manage Items
 
-fun Game.removeItemfromPlayer(name: String) = copy(player = player.removeItem(name))
+fun Game.giveItemtoPlayer(item: Item) = copy(player = player.addItem(item)).updateInventoryItemSlots()
 
-fun Game.removeItemfromPlayer(id: Int) = copy(player = player.removeItem(id))
+fun Game.removeItemfromPlayer(name: String) = copy(player = player.removeItem(name)).updateInventoryItemSlots()
 
-fun Game.checkInventoryClicks(me: MouseEvent, multiSelect: Boolean) = copy(player = player.checkInventoryClicks(me, multiSelect))
+fun Game.removeItemfromPlayer(id: Int) = copy(player = player.removeItem(id)).updateInventoryItemSlots()
+
+//Verify interaction with GUI
+
+fun Game.checkInventoryClicks(me: MouseEvent, multiSelect: Boolean) = copy(gui = gui.checkClicks(me, multiSelect))
 
 fun Game.removeInventorySelectedItems() : Game{
     var game = this
-    player.inventory.gui.slots.forEach { slot ->
+
+    gui.slots.forEach { slot ->
         if(slot.selected){
-            println("Item with name ${player.inventory.items[slot.position].name} was removed")
-            game = game.removeItemfromPlayer(slot.position)
+            val itemName = player.inventory.items[slot.position].name
+            println("Item with name $itemName was removed")
+            game = game.removeItemfromPlayer(itemName)
         }
     }
     return game
 }
 
+
+
 fun Game.toggleInventory() : Game = if(state != "inventory") openInventory() else closeInventory()
 
 
+//Load initial objects
 fun loadMap(number: Int) : List<List<Int>>{
     val file = File("src/main/resources/Map$number/Tiles.txt")
     val lines = file.readLines()
@@ -73,6 +83,8 @@ fun loadNPCs(number: Int) : List<NPC>{
     return npcs
 }
 
+//Draw game
+
 fun Canvas.drawMap(map: List<List<Int>>){
     for(i in map.indices){
         for(j in map[i].indices){
@@ -92,7 +104,7 @@ fun Canvas.drawGame(game: Game){
     drawPlayer(game.player)
 
     if(game.state == "inventory"){
-        drawInventory(game.player.inventory)
+        drawPlayerInventory(game)
         //drawGUI(game.player.inventory.gui)
     }
 }

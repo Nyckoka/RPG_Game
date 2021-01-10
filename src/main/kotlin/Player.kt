@@ -11,15 +11,11 @@ fun Player.removeItem(itemName: String) = copy(inventory = inventory.removeItem(
 
 fun Player.removeItem(id: Int) = copy(inventory = inventory.removeItem(id))
 
-fun Player.selectInventorySlot(slot: Slot) = copy(inventory = inventory.selectSlot(slot))
-
-fun Player.checkInventoryClicks(me: MouseEvent, multiSelect: Boolean) = copy(inventory = inventory.checkClicks(me, multiSelect))
-
 fun Canvas.drawPlayer(player: Player){
     player.apply {
         val drawPositionX = position.x * TILE_SIDE
         val drawPositionY = position.y * TILE_SIDE
-        val scale = 1
+        val scale = 2
         val HAIR_COLOR = 0x974807
         val SKIN_COLOR = 0xFAC090
         val BLUE_SHIRT_COLOR = 0x0070C0

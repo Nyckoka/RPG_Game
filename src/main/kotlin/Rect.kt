@@ -13,17 +13,15 @@ fun Rect.yRange() = position.y..position.y + height
 
 fun Rect.isPointInside(x: Int, y: Int) = x in xRange() && y in yRange()
 
-
 data class Slot(val position: Int, val selected: Boolean)
 
-fun Slot.yPos() = windowPosition.y + TILE_SIDE * (3 + position)
+fun Slot.yPos() = InventoryGUI.Slot.ITEM_SLOTS_START_Y + TILE_SIDE * position
 
-fun Slot.xRange() = windowPosition.x..windowPosition.x + inventoryWindowWidth
+fun Slot.xRange() = InventoryGUI.slot_xRange
 fun Slot.yRange() = yPos()..yPos() + TILE_SIDE
 
 fun Slot.isPointInside(x: Int, y: Int) = x in xRange() && y in yRange()
 
 fun Slot.isClicked(me: MouseEvent) = isPointInside(me.x, me.y)
 
-fun Slot.select() = copy(selected = true)
-fun Slot.unselect() = copy(selected = false)
+fun Slot.select() = copy(selected = !selected)
